@@ -12,30 +12,52 @@ public class HibernateUtil {
     
     static {
         try {
+            // Configura o sistema de logging
+            try {
+                java.net.URL loggingConfig = HibernateUtil.class.getClassLoader().getResource("logging.properties");
+                if (loggingConfig != null) {
+                    System.setProperty("java.util.logging.config.file", loggingConfig.getFile());
+                    System.setProperty("org.jboss.logging.provider", "slf4j");
+                }
+            } catch (Exception e) {
+                System.err.println("Aviso: Não foi possível configurar o sistema de logging: " + e.getMessage());
+                // Continua a execução mesmo se houver falha na configuração de log
+            }
             // Carrega as propriedades do persistence.xml
             Properties props = new Properties();
             
             // Configurações de conexão
-            props.put("jakarta.persistence.jdbc.driver", "com.mysql.cj.jdbc.Driver");
             props.put("jakarta.persistence.jdbc.url", "jdbc:mysql://localhost:3306/produtos_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC");
             props.put("jakarta.persistence.jdbc.user", "root");
             props.put("jakarta.persistence.jdbc.password", "123456");
+
+            // Configurações do HikariCP
+            props.put("hibernate.connection.provider", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
+            props.put("hibernate.hikari.dataSourceClassName", "com.mysql.cj.jdbc.MysqlDataSource");
+            props.put("hibernate.hikari.dataSource.url", "jdbc:mysql://localhost:3306/produtos_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC");
+            props.put("hibernate.hikari.dataSource.user", "root");
+            props.put("hibernate.hikari.dataSource.password", "123456");
+            props.put("hibernate.hikari.maximumPoolSize", "20");
+            props.put("hibernate.hikari.minimumIdle", "5");
+            props.put("hibernate.hikari.idleTimeout", "300000");
+            props.put("hibernate.hikari.maxLifetime", "1200000");
+            props.put("hibernate.hikari.connectionTimeout", "30000");
+            props.put("hibernate.hikari.autoCommit", "false");
             
-            // Configurações do Hibernate
-            props.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-            props.put("hibernate.hbm2ddl.auto", "validate");
+            // Configurações de logging
             props.put("hibernate.show_sql", "true");
             props.put("hibernate.format_sql", "true");
             props.put("hibernate.use_sql_comments", "true");
             
-            // Configurações de conexão adicionais
-            props.put("hibernate.connection.provider_disables_autocommit", "true");
-            props.put("hibernate.connection.characterEncoding", "utf8");
-            props.put("hibernate.connection.useUnicode", "true");
-            props.put("hibernate.connection.allowPublicKeyRetrieval", "true");
-            
             // Cria a fábrica de EntityManager com as propriedades
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT, props);
+            
+            // Adiciona um shutdown hook para fechar a fábrica ao desligar a aplicação
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if (factory != null && factory.isOpen()) {
+                    factory.close();
+                }
+            }));
             
         } catch (Exception e) {
             System.err.println("Erro ao criar EntityManagerFactory: " + e.getMessage());

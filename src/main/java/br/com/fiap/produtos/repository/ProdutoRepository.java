@@ -4,6 +4,7 @@ import br.com.fiap.produtos.model.Produto;
 import br.com.fiap.produtos.util.HibernateUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import org.hibernate.Hibernate;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,18 +52,31 @@ public class ProdutoRepository {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             em.getTransaction().begin();
+            
+            // Primeiro, busca o produto sem JOIN FETCH
             Produto produto = em.find(Produto.class, id);
+            
             if (produto != null) {
-                // Força o carregamento da categoria se for lazy
-                produto.getCategoria();
+                // Se encontrou o produto, faz um refresh para garantir que tudo está carregado
+                em.refresh(produto);
+                
+                // Força o carregamento da categoria
+                if (produto.getCategoria() != null) {
+                    // Inicializa o proxy da categoria
+                    Hibernate.initialize(produto.getCategoria());
+                    // Acessa um método para garantir que o proxy seja inicializado
+                    produto.getCategoria().getNome();
+                }
             }
+            
             em.getTransaction().commit();
             return Optional.ofNullable(produto);
+            
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new RuntimeException("Erro ao buscar produto por ID: " + e.getMessage(), e);
         } finally {
             em.close();
         }

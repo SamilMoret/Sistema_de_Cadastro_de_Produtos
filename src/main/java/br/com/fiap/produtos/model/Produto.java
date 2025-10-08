@@ -31,24 +31,26 @@ public class Produto {
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataDeCadastro;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
     @PrePersist
-    protected void onCreate() {
-        this.dataDeCadastro = LocalDateTime.now();
+    protected void onCreate () {
+        this.dataDeCadastro = LocalDateTime.now ( );
     }
 
     @Override
-    public String toString() {
-        return "Produto{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", descricao='" + descricao + '\'' +
-                ", preco=" + preco +
-                ", dataDeCadastro=" + dataDeCadastro +
-                ", categoria=" + categoria.getNome() +
-                '}';
+    public String toString () {
+        return String.format (
+                "Produto{id=%d, nome='%s', descricao='%s', preco=%.2f, dataDeCadastro=%s, categoria='%s'}",
+                id,
+                nome,
+                descricao != null ? descricao : "",
+                preco,
+                dataDeCadastro != null ? dataDeCadastro.toString ( ) : "não informada",
+                categoria != null ? categoria.getNome ( ) : "sem categoria"
+        );
     }
+
 }

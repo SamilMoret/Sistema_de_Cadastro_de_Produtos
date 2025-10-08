@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console appender para saída no terminal -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Configuração de níveis de log -->
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.flywaydb" level="WARN"/>
+    
+    <!-- Desativa os logs do HikariCP -->
+    <logger name="com.zaxxer.hikari" level="OFF"/>
+    
+    <!-- Nível padrão para a aplicação -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
