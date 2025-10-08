@@ -31,26 +31,38 @@ public class Produto {
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataDeCadastro;
 
+    @Column(name = "quantidade_estoque", nullable = false)
+    private Integer quantidadeEmEstoque;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
     @PrePersist
-    protected void onCreate () {
-        this.dataDeCadastro = LocalDateTime.now ( );
+    protected void onCreate() {
+        this.dataDeCadastro = LocalDateTime.now();
     }
 
     @Override
     public String toString () {
         return String.format (
-                "Produto{id=%d, nome='%s', descricao='%s', preco=%.2f, dataDeCadastro=%s, categoria='%s'}",
+                "Produto{id=%d, nome='%s', descricao='%s', preco=%.2f, dataDeCadastro=%s, quantidadeEmEstoque=%d, categoria='%s'}",
                 id,
                 nome,
                 descricao != null ? descricao : "",
                 preco,
                 dataDeCadastro != null ? dataDeCadastro.toString ( ) : "não informada",
+                quantidadeEmEstoque,
                 categoria != null ? categoria.getNome ( ) : "sem categoria"
         );
     }
 
-}
+    @Builder
+    public Produto(Long id, String nome, String descricao, BigDecimal preco, Categoria categoria, Integer quantidadeEmEstoque) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.categoria = categoria;
+        this.quantidadeEmEstoque = quantidadeEmEstoque != null ? quantidadeEmEstoque : 0;
+    }

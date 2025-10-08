@@ -95,8 +95,22 @@ public class SistemaCadastroProdutos {
         System.out.print("Categoria: ");
         String categoria = scanner.nextLine();
         
+        Integer quantidadeEstoque = null;
+        while (quantidadeEstoque == null) {
+            try {
+                System.out.print("Quantidade em estoque: ");
+                quantidadeEstoque = Integer.parseInt(scanner.nextLine());
+                if (quantidadeEstoque < 0) {
+                    System.out.println("A quantidade não pode ser negativa!");
+                    quantidadeEstoque = null;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, digite um número inteiro válido.");
+            }
+        }
+        
         try {
-            Produto produto = produtoService.cadastrarProduto(nome, descricao, preco, categoria);
+            Produto produto = produtoService.cadastrarProduto(nome, descricao, preco, categoria, quantidadeEstoque);
             System.out.println("\nProduto cadastrado com sucesso!");
             System.out.println(produto);
         } catch (Exception e) {

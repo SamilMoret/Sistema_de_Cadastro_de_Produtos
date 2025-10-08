@@ -18,7 +18,12 @@ public class ProdutoService {
         this.categoriaRepository = new CategoriaRepository();
     }
 
-    public Produto cadastrarProduto(String nome, String descricao, java.math.BigDecimal preco, String nomeCategoria) {
+    public Produto cadastrarProduto(String nome, String descricao, java.math.BigDecimal preco, String nomeCategoria, Integer quantidadeEmEstoque) {
+        // Validação básica
+        if (quantidadeEmEstoque == null || quantidadeEmEstoque < 0) {
+            throw new IllegalArgumentException("A quantidade em estoque não pode ser negativa");
+        }
+        
         // Verifica se a categoria já existe
         Optional<Categoria> categoriaOpt = categoriaRepository.findByNome(nomeCategoria);
         Categoria categoria;
@@ -38,6 +43,7 @@ public class ProdutoService {
                 .descricao(descricao)
                 .preco(preco)
                 .categoria(categoria)
+                .quantidadeEmEstoque(quantidadeEmEstoque)
                 .build();
                 
         return produtoRepository.save(produto);
