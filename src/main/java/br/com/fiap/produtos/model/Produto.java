@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Produto {
 
     @Id
@@ -30,9 +31,6 @@ public class Produto {
 
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataDeCadastro;
-
-    @Column(name = "quantidade_estoque", nullable = false)
-    private Integer quantidadeEmEstoque;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
@@ -57,12 +55,6 @@ public class Produto {
         );
     }
 
-    @Builder
-    public Produto(Long id, String nome, String descricao, BigDecimal preco, Categoria categoria, Integer quantidadeEmEstoque) {
-        this.id = id;
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.categoria = categoria;
-        this.quantidadeEmEstoque = quantidadeEmEstoque != null ? quantidadeEmEstoque : 0;
-    }
+    @Builder.Default
+    @Column(name = "quantidade_estoque", nullable = false)
+    private Integer quantidadeEmEstoque = 0;
