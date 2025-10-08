@@ -37,8 +37,8 @@ public class Produto {
     private Categoria categoria;
 
     @PrePersist
-    protected void onCreate() {
-        this.dataDeCadastro = LocalDateTime.now();
+    protected void onCreate () {
+        this.dataDeCadastro = LocalDateTime.now ( );
     }
 
     @Override
@@ -58,3 +58,5 @@ public class Produto {
     @Builder.Default
     @Column(name = "quantidade_estoque", nullable = false)
     private Integer quantidadeEmEstoque = 0;
+
+}
