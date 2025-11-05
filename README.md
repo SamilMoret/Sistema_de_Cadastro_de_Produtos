@@ -88,4 +88,4 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou env
 
 ---
 
-Desenvolvido por [Seu Nome] - FIAP © 2025
+Desenvolvido por Samil Moret - 2025
